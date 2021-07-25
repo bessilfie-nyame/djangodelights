@@ -1,0 +1,14 @@
+{% extends './base.html' %}
+
+{% block head %}
+    <title>Ingredients to Update</title>
+{% endblock %}
+
+{% block content %}
+    <form method="POST">     
+        <div>
+            {{ form.as_p }}
+            <input type="submit" value="Update"/>
+        </div>
+    </form>
+{% endblock %}

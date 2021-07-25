@@ -1,0 +1,24 @@
+{% extends "inventory/base.html" %}
+
+{% block head %}
+    <title>Ingredients</title>
+{% endblock %}
+
+{% block content %}
+    <table>
+        <tr>
+            <th>name</th>
+            <th>quantity</th>
+            <th>unit</th>
+            <th>unit price</th>
+        </tr>
+        {% for ingredient in ingredients %}
+        <tr>
+            <td><a href="{% url 'update_ingredient' ingredient.id %}">{{ingredient.name}}</a></td>
+            <td>{{ingredient.quantity}}</td>
+            <td>{{ingredient.unit}}</td>
+            <td>{{ingredient.unit_price}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
