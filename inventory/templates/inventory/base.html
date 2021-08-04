@@ -10,6 +10,12 @@
             <a>Home</a>
             <a>Home</a>
             <a>Home</a>
+            {% if user.username %}
+                <a class="logout-button" href="{% url 'logout' %}">Log Out</a>
+            {% else %}
+                <a class="logout-button" href="{% url 'login' %}">Log In</a>/
+                <a class="logout-button" href="{% url 'signup' %}">Sign up</a>
+            {% endif %}
         </nav>
         {% block content %}
         {% endblock %}

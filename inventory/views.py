@@ -1,9 +1,17 @@
 from django.db.models.base import Model
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from django.contrib.auth import logout
+
+from django.contrib.auth.decorators import login_required 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from .models import * 
 from .forms import *
+
 
 class HomeView(TemplateView):
     template_name = "inventory/home.html"
@@ -22,7 +30,16 @@ class HomeView(TemplateView):
 
         return context
 
-class IngredientsView(ListView):
+class SignUp(CreateView):
+  form_class = UserCreationForm
+  success_url = reverse_lazy("login")
+  template_name = "registration/signup.html"
+
+def logout_request(request):
+  logout(request)
+  return redirect("index")
+
+class IngredientsView(LoginRequiredMixin, ListView):
     model = Ingredient
     template_name = "inventory/ingredients.html"
 
@@ -48,7 +65,7 @@ class IngredientDelete(DeleteView):
     success_url = "/ingredients/"
 
 
-class MenuItemView(ListView):
+class MenuItemView(LoginRequiredMixin, ListView):
     model = MenuItem
     template_name = "inventory/menu.html"
  
@@ -64,7 +81,7 @@ class RecipeCreate(CreateView):
     template_name = "inventory/add_recipe_requirements.html"
 
 
-class Purchaseview(ListView):
+class Purchaseview(LoginRequiredMixin, ListView):
     model = Purchase
     template_name = "inventory/purchases.html"
 

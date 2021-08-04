@@ -1,0 +1,17 @@
+{% extends "../inventory/base.html" %}
+
+{% block content %}
+
+
+<div class="login-form">
+<h2>Please login</h2>
+  <form class="login" method="post">
+      <div>
+        {% csrf_token %}
+          {% comment %} Add your form rendering tags below {% endcomment %}
+        {{ form.as_p}}  
+        <input type="submit" value="Login"/>
+      </div>
+  </form>
+</div>
+{% endblock %}
