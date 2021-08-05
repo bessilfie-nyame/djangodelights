@@ -4,7 +4,8 @@ from . import views
 
 urlpatterns = [
     path('', views.HomeView.as_view(), name='home'),
-    path("account/", include("django.contrib.auth.urls")),
+    path("account/", include("django.contrib.auth.urls"),
+    name='login'),
     path("signup/", views.SignUp.as_view(), name="signup"),
     path("logout", views.logout_request, name="logout"),
     path('ingredients/', views.IngredientsView.as_view(), 
@@ -24,5 +25,7 @@ urlpatterns = [
     path('recipe/new', views.RecipeCreate.as_view(),
     name='create_recipe'),
     path('purchase/new', views.PurchaseCreate.as_view(),
-    name='create_purchase')
+    name='create_purchase'),
+    path('report', views.ProfitRevenue.as_view(),
+    name='revenue_profit')
 ]

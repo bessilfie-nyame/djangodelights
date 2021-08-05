@@ -4,9 +4,11 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
-from django.contrib.auth import logout
-
-from django.contrib.auth.decorators import login_required 
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse
+ 
+from django.shortcuts import redirect
+# from django.contrib.auth.decorators import login_required 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import * 
@@ -15,20 +17,23 @@ from .forms import *
 
 class HomeView(TemplateView):
     template_name = "inventory/home.html"
-    # revenue = 0
 
-    def get_context_data(self):
-        context = super().get_context_data()
-        context["ingredients"] = Ingredient.objects.all()
-        context["menuItem"] = MenuItem.objects.all()
-        context["recipe_requirement"] = RecipeRequirement.objects.all()
-        context["purchase"] = Purchase.objects.all()
+def login_view(request):
+  context = {
+    "login_view": "active"
+  }
+  if request.method == "POST":
+    username = request.POST["username"]
+    password = request.POST["password"]
+    user = authenticate(request, username=username,
+                        password=password)
+    if user is not None:
+      login(request, user)
 
-        # HomeView.revenue += Purchase.menu_item.price
-        # rev = HomeView.revenue
-        # context["revenue"] = rev
-
-        return context
+      return redirect("home")
+    else:
+      return HttpResponse("invalid credentials")
+  return render(request, "registration/login.html", context)
 
 class SignUp(CreateView):
   form_class = UserCreationForm
@@ -37,7 +42,7 @@ class SignUp(CreateView):
 
 def logout_request(request):
   logout(request)
-  return redirect("index")
+  return redirect("home")
 
 class IngredientsView(LoginRequiredMixin, ListView):
     model = Ingredient
@@ -96,6 +101,41 @@ class PurchaseCreate(CreateView):
     form_class = PurchaseCreateForm
     template_name = "inventory/record_purchase.html"
 
+
+class ProfitRevenue(TemplateView):
+    template_name = "inventory/profit_revenue.html"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        ingredients = Ingredient.objects.all()
+        menu_items = MenuItem.objects.all()
+        
+        cost = self.calculate_cost(ingredients)
+        revenue = self.calculate_revenue(menu_items)
+        profit = self.calculate_profit(revenue, cost)
+
+        context['profit'] = profit
+        context['revenue'] = revenue
+
+        return context
+
+    @staticmethod
+    def calculate_cost(items):
+        cost = 0   
+        for item in items:
+            cost += item.unit_price
+        return cost
+
+    @staticmethod
+    def calculate_revenue(items):
+        revenue = 0   
+        for item in items:
+            revenue += item.price
+        return revenue
+
+    @staticmethod
+    def calculate_profit(revenue, cost):
+        return revenue - cost
 
 
 
